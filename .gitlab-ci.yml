@@ -1,0 +1,15 @@
+stages:
+  - test
+
+run_python_mr_bot:
+  image: python:3.7-stretch
+  stage: test
+  only: 
+    - merge_requests
+  before_script:
+    - apt update && apt-get install -y git sudo
+  script:
+    - sudo pip install GitlabMRScanner==0.0.3
+    - echo "Short SHA = ${CI_COMMIT_SHORT_SHA}"
+    - echo "{\"branch\":\"${CI_COMMIT_REF_NAME}\", \"token\":\"$PA_TOKEN\", \"project_id\":${CI_MERGE_REQUEST_PROJECT_ID}, \"hash\":\"${CI_COMMIT_SHORT_SHA}\", \"pr_id\":${CI_MERGE_REQUEST_IID}}" > config.json
+    - mr-bot
